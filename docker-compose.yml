@@ -1,0 +1,31 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb:10.3.32
+    ports:
+      - 53306:3306
+    networks:
+      - apinet
+    env_file:
+      - ./.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: ./docker/db_stored
+        target: /var/lib/mysql
+  api:
+    image: php:7.3-apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./docker/site.conf:/etc/apache2/sites-available/000-default.conf
+      - ./:/var/www/html
+    ports:
+      - 127.56.0.1:8080:80
+    networks:
+      - apinet
+networks:
+  apinet:
+    driver: bridge
