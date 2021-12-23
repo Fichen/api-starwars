@@ -56,11 +56,15 @@ RUN docker-php-ext-configure bcmath --enable-bcmath \
 
 COPY --chown=www-data:www-data --from=vendor /var/www/html/vendor /var/www/html/vendor
 COPY --chown=www-data:www-data . /var/www/html
-RUN chown -R www-data:www-data /var/www/html/vendor
+#RUN chown -R www-data:www-data /var/www/html/vendor
+
+RUN a2enmod rewrite
+
 
 RUN php artisan key:generate
 RUN php artisan config:cache
 RUN php artisan route:cache
+
 
 
 

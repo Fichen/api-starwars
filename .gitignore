@@ -14,3 +14,4 @@ yarn-error.log
 /.idea
 /.vscode
 workspace.code-workspace
+docker/db_stored
