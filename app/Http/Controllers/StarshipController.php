@@ -87,9 +87,16 @@ class StarshipController extends Controller
         }
 
         $responseAPI = $this->getFromExternalStarshipItemByID($id);
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
+
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
+
 
         $starship = $this->getStarshipAndCreateIfNotExists($id);
-
         $responseData = new  StarshipResource(
             (object) array_merge($starship->getAttributes(), $responseAPI->json())
         );
@@ -124,12 +131,17 @@ class StarshipController extends Controller
             return $this->responseNotFoundError();
         }
 
-        $this->getFromExternalStarshipItemByID($id);
+        $responseAPI = $this->getFromExternalStarshipItemByID($id);
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
+
 
         $starship = $this->getStarshipAndCreateIfNotExists($id);
 
         $starship->qty = $qty;
         if ($starship->saveOrFail()) {
+            Cache::flush();
             $responseData = new SwapiResponseOk([]);
             $responseData->additional(['detail: Model id ' . $id . ' updated successfully']);
             return response()->json(
@@ -152,11 +164,15 @@ class StarshipController extends Controller
         }
 
         //Could happend that not exists into db but it is a valid ID. Check first against external API
-        $this->getFromExternalStarshipItemByID($id);
+        $responseAPI = $this->getFromExternalStarshipItemByID($id);
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
 
         $starship = $this->getStarshipAndCreateIfNotExists($id);
         $starship->qty += $incrementBy;
         if ($starship->saveOrFail()) {
+            Cache::flush();
             $responseData = new SwapiResponseOk([]);
             $responseData->additional(['detail: Model id ' . $id . ' incremented successfully']);
             return response()->json(
@@ -179,7 +195,10 @@ class StarshipController extends Controller
         }
 
         //Could happend that not exists into db but it is a valid ID. Check first against external API
-        $this->getFromExternalStarshipItemByID($id);
+        $responseAPI = $this->getFromExternalStarshipItemByID($id);
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
 
         $starship = $this->getStarshipAndCreateIfNotExists($id);
         $starship->qty -= $decrementBy;
@@ -189,6 +208,7 @@ class StarshipController extends Controller
         }
 
         if ($starship->saveOrFail()) {
+            Cache::flush();
             $responseData = new SwapiResponseOk([]);
             $responseData->additional(['detail: Model id ' . $id . ' decremented successfully']);
             return response()->json(
@@ -200,13 +220,7 @@ class StarshipController extends Controller
 
     public function getFromExternalStarshipItemByID($id): \Illuminate\Http\Client\Response
     {
-        $responseAPI =  Http::get('https://swapi.dev/api/starships/' . $id);
-
-        if ($responseAPI->status() == 404) {
-            $this->responseNotFoundError();
-        }
-
-        return $responseAPI;
+        return Http::get('https://swapi.dev/api/starships/' . $id);
     }
 
     public function getStarshipAndCreateIfNotExists($id): \App\Models\Starship
@@ -225,7 +239,7 @@ class StarshipController extends Controller
     {
         $ids = [];
         foreach ($results as $apiStarship) {
-            $id = StarshipResource::getIDFromURL($apiStarship['url']);
+            $id = getIDFromURL($apiStarship['url']);
             $this->getStarshipAndCreateIfNotExists($id);
             $ids[] = $id;
         }

@@ -8,16 +8,6 @@ class StarshipResource extends JsonResource
 {
     public static $wrap = null;
 
-    public static function getIDFromURL($url)
-    {
-        return basename(parse_url($url, PHP_URL_PATH));
-    }
-
-    public static function generateUrlByID($id)
-    {
-        return route('starships.show', ['id' => $id]);
-    }
-
     /**
      * Transform the resource collection into an array.
      *
@@ -46,7 +36,7 @@ class StarshipResource extends JsonResource
             'films' => $this->films,
             'created' => $this->created,
             'edited' => $this->edited,
-            'url' => self::generateUrlByID($this->id),
+            'url' => route('starships.show', ['id' => $this->id]),
         ];
     }
 }

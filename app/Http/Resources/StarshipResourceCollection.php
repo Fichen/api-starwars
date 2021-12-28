@@ -26,7 +26,7 @@ class StarshipResourceCollection extends ResourceCollection
         $this->collection->transform(function ($starship, $value) {
             foreach ($this->responseAPI['results'] as $result) {
                 if ($result['url'] == env('ENDPOINT_STARSHIP') . $starship->resource->getAttributes()['id'] . '/') {
-                    $result['url'] = StarshipResource::generateUrlByID($starship->resource->getAttributes()['id']);
+                    $result['url'] =  route('starships.show', ['id' => $starship->resource->getAttributes()['id'] ]);
                     $starshipResource =  new  StarshipResource(
                         (object) array_merge($starship->getAttributes(), $result)
                     );
