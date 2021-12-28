@@ -6,39 +6,59 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Starship;
 use App\Http\Resources\StarshipResource;
+use App\Http\Resources\StarshipResourceCollection;
+use App\Http\Resources\SwapiResponseError;
+use Illuminate\Support\Facades\Cache;
 
 class StarshipController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function index(Request $request)
     {
-        //
+        $page = $request->query('page', null);
+        $responseData = null;
+        $queryString = !is_null($page) && is_numeric($page) && $page > 0 ? '/?page=' . $page : '';
+        $httpStatus = !is_numeric($page) && !is_null($page) || $page == 0 ? 404 : 200;
+
+        if($httpStatus == 404) {
+            return $this->responseNotFoundError();
+        }
+
+        if (Cache::has('starships_page_' . $page)) {
+            $responseData = Cache::get('starships_page_' . $page);
+            return response()->json(
+                $responseData,
+                $httpStatus
+            )
+                ->header('Content-Type', 'application/json')
+                ->header('Vary', 'Accept')
+                ->header('Allow', 'GET, HEAD, OPTIONS');
+        }
+
+        $responseAPI = Http::get('https://swapi.dev/api/starships' . $queryString);
+
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
+
+        $ids = $this->loadExternalResponseToLocal($responseAPI->json()['results']);
+        $responseData =  new StarshipResourceCollection(Starship::findMany($ids), $responseAPI->json());
+        Cache::put('starships_page_' . $page, $responseData, now()->addSeconds(env('CACHE_TTL')));
+
+
+        return response()->json(
+            $responseData,
+            $httpStatus
+        )
+            ->header('Content-Type', 'application/json')
+            ->header('Vary', 'Accept')
+            ->header('Allow', 'GET, HEAD, OPTIONS');
     }
+
 
     /**
      * Display the specified resource.
@@ -46,13 +66,45 @@ class StarshipController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Starship $starship)
+    public function show($id)
     {
-        //return new StarshipResource($starship);
-        $response = Http::get('https://swapi.dev/api/starships/' . $starship->id);
-        $data = (object) array_merge($starship->getAttributes(),$response->json());
-        return new StarshipResource($data);
-        //return (new StarshipResource($data))->additional($response->json());
+        if (!is_numeric($id)) {
+            return $this->responseNotFoundError();
+        }
+
+        $responseData = null;
+
+        if (Cache::has('starship_item_' . $id)) {
+            $responseData = Cache::get('starship_item_' . $id);
+            return response()->json(
+                $responseData,
+                200
+            )
+                ->header('Content-Type', 'application/json')
+                ->header('Vary', 'Accept')
+                ->header('Allow', 'GET, HEAD, OPTIONS');
+        }
+
+        $responseAPI = Http::get('https://swapi.dev/api/starships/' . $id);
+
+        if ($responseAPI->status() == 404) {
+            return $this->responseNotFoundError();
+        }
+
+        $starship = $this->getStarship($id);
+
+        $responseData = new  StarshipResource(
+            (object) array_merge($starship->getAttributes(), $responseAPI->json())
+        );
+        Cache::put('starship_item_' . $id,$responseData, now()->addSeconds(env('CACHE_TTL')));
+
+        return response()->json(
+            $responseData,
+            $responseAPI->status()
+        )
+            ->header('Content-Type', 'application/json')
+            ->header('Vary', 'Accept')
+            ->header('Allow', 'GET, HEAD, OPTIONS');
     }
 
     /**
@@ -78,14 +130,43 @@ class StarshipController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    protected function getStarship($id): \App\Models\Starship
     {
-        //
+        $starship = Starship::find($id);
+        if(is_null($starship)) {
+            return $this->createStarship($id);
+        }
+        return $starship;
+    }
+
+    protected function loadExternalResponseToLocal($results)
+    {
+        $ids = [];
+        foreach ($results as $apiStarship) {
+            $id = StarshipResource::getIDFromURL($apiStarship['url']);
+            if (is_null(Starship::find($id))) {
+                $this->createStarship($id);
+            }
+            $ids[] = $id;
+        }
+        return $ids;
+    }
+
+    protected function createStarship($id): \App\Models\Starship
+    {
+        return Starship::create([
+            'id' => $id,
+            'qty' => 0
+        ]);
+    }
+
+    protected function responseNotFoundError(){
+        return response()->json(
+            new SwapiResponseError([]),
+            404
+        )
+            ->header('Content-Type', 'application/json')
+            ->header('Vary', 'Accept')
+            ->header('Allow', 'GET, HEAD, OPTIONS');
     }
 }

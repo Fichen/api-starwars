@@ -8,6 +8,16 @@ class StarshipResource extends JsonResource
 {
     public static $wrap = null;
 
+    public static function getIDFromURL($url)
+    {
+        return basename(parse_url($url, PHP_URL_PATH));
+    }
+
+    public static function generateUrlByID($id)
+    {
+        return route('starships.show', ['id' => $id]);
+    }
+
     /**
      * Transform the resource collection into an array.
      *
@@ -22,10 +32,10 @@ class StarshipResource extends JsonResource
             'name' => $this->name,
             'model' => $this->model,
             'manufacturer' => $this->manufacturer,
-            'cost_in_credits' =>$this->cost_in_credits,
+            'cost_in_credits' => $this->cost_in_credits,
             'length' => $this->length,
             'max_atmosphering_speed' => $this->max_atmosphering_speed,
-            'crew' =>$this->crew,
+            'crew' => $this->crew,
             'passengers' => $this->passengers,
             'cargo_capacity' => $this->cargo_capacity,
             'consumables' => $this->consumables,
@@ -36,7 +46,7 @@ class StarshipResource extends JsonResource
             'films' => $this->films,
             'created' => $this->created,
             'edited' => $this->edited,
-            'url' => $this->url,
+            'url' => self::generateUrlByID($this->id),
         ];
     }
 }

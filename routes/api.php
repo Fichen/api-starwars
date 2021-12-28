@@ -19,6 +19,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('starships', StarshipController::class, [
+/* Route::resource('starships', StarshipController::class, [
     'except' => ['create', 'destroy']
 ]);
+ */
+
+ Route::get('starships/{id}', StarshipController::class . '@show')->name('starships.show');
+
+ Route::get('starships', StarshipController::class . '@index')->name('starships.index');
