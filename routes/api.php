@@ -19,11 +19,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-/* Route::resource('starships', StarshipController::class, [
-    'except' => ['create', 'destroy']
-]);
- */
+Route::fallback(function(){
+    return response()->json(['detail' => 'Not Found'], 404);
+});
 
  Route::get('starships/{id}', StarshipController::class . '@show')->name('starships.show');
 
  Route::get('starships', StarshipController::class . '@index')->name('starships.index');
+
+ Route::patch('starships/{id}', StarshipController::class . '@update')->name('starships.update');
+ Route::patch('starships/increment/{id}', StarshipController::class . '@increment')->name('starships.increment');
+ Route::patch('starships/decrement/{id}', StarshipController::class . '@decrement')->name('starships.decrement');

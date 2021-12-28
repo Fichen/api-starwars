@@ -4,8 +4,10 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SwapiResponseError extends JsonResource
+class SwapiResponseOk extends JsonResource
 {
+
+    public static $wrap = null;
     /**
      * Transform the resource into an array.
      *
@@ -14,12 +16,11 @@ class SwapiResponseError extends JsonResource
      */
     public function toArray($request)
     {
-        if (count($this->additional) > 0) {
+        if(count($this->additional) > 0) {
             return $this->additional;
         }
-
         return [
-            "detail" => "Not found",
+            'msg' => 'Ok'
         ];
     }
 }
