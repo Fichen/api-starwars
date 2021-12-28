@@ -9,9 +9,8 @@ use App\Http\Resources\StarshipResource;
 use App\Http\Resources\StarshipResourceCollection;
 use App\Http\Resources\SwapiResponseError;
 use App\Http\Resources\SwapiResponseOk;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 class StarshipController extends Controller
 {
