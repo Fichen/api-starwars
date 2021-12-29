@@ -17,7 +17,7 @@ class StarshipResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            //'id' => $this->id,
             'qty' => $this->qty,
             'name' => $this->name,
             'model' => $this->model,

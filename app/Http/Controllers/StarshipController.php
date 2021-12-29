@@ -125,7 +125,7 @@ class StarshipController extends Controller
 
         if (is_null($qty) || !is_numeric($qty)) {
             $reponseError = new SwapiResponseError([]);
-            $reponseError->additional(["detail: qty must be numeric and greater than 0"]);
+            $reponseError->additional(["detail" =>  "qty must be numeric and greater than 0"]);
             return response()->json($reponseError, 400);
         } elseif (!is_numeric($id)) {
             return $this->responseNotFoundError();
@@ -143,11 +143,11 @@ class StarshipController extends Controller
         if ($starship->saveOrFail()) {
             Cache::flush();
             $responseData = new SwapiResponseOk([]);
-            $responseData->additional(['detail: Model id ' . $id . ' updated successfully']);
+            $responseData->additional(['detail' => 'Model id ' . $id . ' updated successfully']);
             return response()->json(
                 $responseData,
-                200
-            );
+                201
+            )->header('Content-Type', 'application/json');
         }
     }
 
@@ -157,7 +157,7 @@ class StarshipController extends Controller
 
         if (is_null($incrementBy) || !is_numeric($incrementBy)) {
             $reponseError = new SwapiResponseError([]);
-            $reponseError->additional(["detail: incrementBy must be numeric and greater than 0"]);
+            $reponseError->additional(["detail" => "incrementBy must be numeric and greater than 0"]);
             return response()->json($reponseError, 400);
         } elseif (!is_numeric($id)) {
             return $this->responseNotFoundError();
@@ -174,10 +174,10 @@ class StarshipController extends Controller
         if ($starship->saveOrFail()) {
             Cache::flush();
             $responseData = new SwapiResponseOk([]);
-            $responseData->additional(['detail: Model id ' . $id . ' incremented successfully']);
+            $responseData->additional(['detail' => 'Model id ' . $id . ' incremented successfully']);
             return response()->json(
                 $responseData,
-                200
+                201
             );
         }
     }
@@ -188,7 +188,7 @@ class StarshipController extends Controller
 
         if (is_null($decrementBy) || !is_numeric($decrementBy)) {
             $reponseError = new SwapiResponseError([]);
-            $reponseError->additional(["detail: decrementBy must be numeric and greater than 0"]);
+            $reponseError->additional(["detail" => "decrementBy must be numeric and greater than 0"]);
             return response()->json($reponseError, 400);
         } elseif (!is_numeric($id)) {
             return $this->responseNotFoundError();
@@ -210,10 +210,10 @@ class StarshipController extends Controller
         if ($starship->saveOrFail()) {
             Cache::flush();
             $responseData = new SwapiResponseOk([]);
-            $responseData->additional(['detail: Model id ' . $id . ' decremented successfully']);
+            $responseData->additional(['detail' => 'Model id ' . $id . ' decremented successfully']);
             return response()->json(
                 $responseData,
-                200
+                201
             );
         }
     }

@@ -44,7 +44,7 @@ class StarshipResourceCollection extends ResourceCollection
         ];
     }
 
-    protected function transformUrl($url = null)
+    public function transformUrl($url = null)
     {
         if (is_null($url)) {
             return null;

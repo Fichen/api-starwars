@@ -65,4 +65,6 @@ RUN a2enmod rewrite
 RUN php artisan key:generate
 RUN php artisan config:cache
 RUN php artisan route:cache
+RUN composer dump-autoload
+
 
