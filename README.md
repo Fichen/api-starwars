@@ -23,11 +23,6 @@ The amount of units for a specific items is showed as a attached attribute of it
 
 The endpoints for starships and vehicles are mostly the same, the main visible change are the attributes from the model.
 
-There are some automated test cases for starship endpoints. If you wish you can run it doing:
-```sh
-docker exec -t api-starwars_api_1 vendor/bin/phpunit
-```
-
 ## Server requirements
 - Docker
 - Docker-compose
@@ -57,3 +52,7 @@ exit
 
 As I comment before, for vehicles is the same behaviour.You only need to change the url path to http://127.56.0.1:8080/api/vehicles
 
+There are some automated test cases for starship endpoints. If you wish you can run it doing:
+```sh
+docker exec -t api-starwars_api_1 vendor/bin/phpunit
+```
