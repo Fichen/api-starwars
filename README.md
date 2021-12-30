@@ -31,8 +31,9 @@ The endpoints for starships and vehicles are mostly the same, the main visible c
 - Clone the repository from [here](https://github.com/Fichen/api-starwars)
 - Run
 ```sh
-docker-compose up -d
+docker-compose up -d --build
 docker exec -ti api-starwars_api_1 bash
+composer dump-autoload
 php artisan migrate
 php artisan migrate:refresh --env=testing --database=sqlite
 exit
