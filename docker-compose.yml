@@ -15,7 +15,7 @@ services:
         source: ./docker/db_stored
         target: /var/lib/mysql
   api:
-    image: fichtenbaum/laravel-swapi:1.0.0
+    image: fichtenbaum/laravel-swapi:1.0.1
     build:
       context: .
       dockerfile: Dockerfile
