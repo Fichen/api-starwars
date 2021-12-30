@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./docker/site.conf:/etc/apache2/sites-available/000-default.conf
-      - ./:/var/www/html
+      #- ./:/var/www/html
     ports:
       - 127.56.0.1:8080:80
     networks:
