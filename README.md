@@ -18,10 +18,12 @@ Dillinger is a cloud-enabled, mobile-ready, offline-storage compatible,
 AngularJS-powered HTML5 Markdown editor.
 
 ## Approach
-Was decided to implement a extended data model between the real API and the new one. The main razon for this decision was that this application does not own the vast majority of the data, so knowing that the developement of theses APIs could finishing in complex solution for updating the local data model. What I assumed here is that data could change (I know the probabbly not 😛, but it was a good exercise think about that). I have intended to reproduce the behaviour of the official API.
-The amount of units for a specific items is showed as a attached attribute of its with the name "qty".
+It was decided to implement a extended data model between the real API and the new one. The main reason for this decision was that this application does not own the vast majority of the data, so knowing that the developement of theses APIs could finishing in complex solution for updating the local data model. What I assumed here was that data could change (I know the probabbly not 😛, but it was a good exercise think about that). I have intended to reproduce the behaviour of the official API.
+The amount of units for a specific items are showed as a attached attribute of its with the name "qty".
 
 The endpoints for starships and vehicles are mostly the same, the main visible change are the attributes from the model.
+
+It was developed with Laravel 8
 
 ## Server requirements
 - Docker
